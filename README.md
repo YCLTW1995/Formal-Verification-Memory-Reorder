@@ -1,6 +1,6 @@
 # Formal-Verification-Memory-Reorder
 
-## Formal verification of memory model.
+# Formal verification of memory model.
 
 # Memory Model :
 Lock-free code is dealing with memory reordering. 
