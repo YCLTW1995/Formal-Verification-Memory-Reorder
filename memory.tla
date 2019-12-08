@@ -8,7 +8,7 @@ Writes == BufSize*3
 (* --algorithm queue
 variables buffer = [i \in 1..BufSize |-> -1], write_ind = BufSize, read_ind = BufSize, last_read = 0, did_proper_read = 1, 
 target = [ a|-> FALSE, b |->-1 ],
-write_buffer = [a |-> FALSE, b |-> 1],   \* struct, gives the values and enum them
+write_buffer = [a |-> FALSE, b |-> 1],   \***** struct, gives the values and enum them
 write_index = [a |-> FALSE, b |-> 2],
 read_buffer = [a |-> FALSE, b |-> 3],
 read_index = [a |-> FALSE, b |-> 4],
@@ -20,30 +20,30 @@ define
     Choose_Set(S) == CHOOSE x \in S : x.a=TRUE 
 end define;
 
-macro do_action(target) begin  \* Do every write and read action 
+macro do_action(target) begin         \***** Do every write and read action 
   if target.b = 1 then
-    if read_ind + BufSize > write_ind then  \* Writer buffer action 
+    if read_ind + BufSize > write_ind then  \***** Writer buffer action 
       buffer[1 + (write_ind % BufSize)] := write_ind;
       write_buffer.a := FALSE;
-      W_Change := FALSE;
+      W_Change := FALSE;        
     end if ;
-  elsif target.b = 2 then \* Writer index action
+  elsif target.b = 2 then            \***** Writer index action
     if read_ind + BufSize > write_ind then 
       write_ind := write_ind + 1;
       write_index.a := FALSE ;
       W_Change := FALSE;
     end if ;
 
-  elsif target.b = 3 then \* Reader buffer
+  elsif target.b = 3 then            \***** Reader buffer
     if read_ind < write_ind then
       last_read := buffer[1 + (read_ind % BufSize)];
       if last_read /= read_ind then
-          did_proper_read := 0   \* If this read data is valid,
+          did_proper_read := 0        \***** If this read data is valid,
       end if;
       read_buffer.a := FALSE ;
       R_Change := FALSE ;
     end if ;
-  elsif target.b = 4 then  \* read index
+  elsif target.b = 4 then            \***** read index
     if read_ind < write_ind then
       read_ind := read_ind + 1 ;
       read_index.a := FALSE ;
@@ -60,10 +60,10 @@ begin
  Write:
   while write_ind <= Writes do
    skip;
-  W_op1:    \* Writer operation 1 : set write_buffer to true
+  W_op1:              \***** Writer operation 1 : set write_buffer to true
    write_buffer.a := TRUE;
-   W_Change := TRUE; \* set TRUE when there is operation on writer
-  W_op2:    \* Writer operation 2 : fence for write_buffer and set write_index to true
+   W_Change := TRUE;              \***** set TRUE when there is operation on writer
+  W_op2:              \***** Writer operation 2 : fence for write_buffer and set write_index to true
    await write_buffer.a = FALSE ;
    write_index.a := TRUE ;
    W_Change := TRUE;
@@ -77,10 +77,10 @@ begin
  Read:
   while read_ind <= Writes do
    skip;
-   R_op1:   \* Reader operation 1 : set read_buffer to true
+   R_op1:              \***** Reader operation 1 : set read_buffer to true
     read_buffer.a := TRUE;
-    R_Change := TRUE;    \* set True when there is operation on reader
-   R_op2:   \* Reader operation 2 : fence for read_buffer and set read_index to true
+    R_Change := TRUE;            \***** set True when there is operation on reader
+   R_op2:              \***** Reader operation 2 : fence for read_buffer and set read_index to true
     await read_buffer.a = FALSE ;
     read_index.a := TRUE ;
     R_Change := TRUE;
@@ -95,18 +95,18 @@ begin
  Memory:
   while write_ind <= Writes do
      skip;
-     M_op1: \* memory operation 1 , wait until there is action for reader or writer, 
-      await target.a = FALSE; \* wait until last memory operation is done 
+     M_op1:           \***** memory operation 1 , wait until there is action for reader or writer, 
+      await target.a = FALSE;        \***** wait until last memory operation is done 
       await R_Change = TRUE \/ W_Change = TRUE;
-      target := CHOOSE x \in {write_buffer,write_index,read_buffer,read_index } : x.a=TRUE; \* choose the random value in the set
-      if target.a = FALSE then \* make sure target get the value
+      target := CHOOSE x \in {write_buffer,write_index,read_buffer,read_index } : x.a=TRUE;   \***** choose the random value in the set
+      if target.a = FALSE then             \***** make sure target get the value
        goto M_op1;
       else 
        goto M_op2;
       end if;
-     M_op2:  \* do the action 
+     M_op2:               \***** do the action 
       do_action(target);
-     M_op3:  \* done action 
+     M_op3:            \***** done action 
       target.a := FALSE;
      M_Foo:
       skip;
@@ -330,10 +330,7 @@ Termination == <>(\A self \in ProcSet: pc[self] = "Done")
 
 \* END TRANSLATION
 
-
-
-
 =============================================================================
 \* Modification History
-\* Last modified Sun Dec 08 18:44:25 EST 2019 by linyungching
+\* Last modified Sun Dec 08 18:46:45 EST 2019 by linyungching
 \* Created Sun Dec 08 17:28:36 EST 2019 by linyungching
