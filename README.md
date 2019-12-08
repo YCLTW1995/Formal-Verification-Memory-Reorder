@@ -1,7 +1,7 @@
 
-## Formal verification of memory model.
+# Formal verification of memory model.
 
-# Memory Model :
+## Memory Model :
 Lock-free code is dealing with memory reordering. 
 Due to both compiler and hardware optimizations, loads and stores maybe be visible to other threads in a different order than on the writing thread. 
 As an example,  
