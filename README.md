@@ -1,6 +1,6 @@
 
 # Formal verification of memory model.
-verify the correctness of a lock-free ringbuffer
+verify the correctness of a out of order lock-free ringbuffer
 ## Project Overview  
 For this project, we are going to verify the correctness of a lock-free ringbuffer. There are two key goals for our verification model. First, with the caveat that the writer will not pause for a slow reader and instead will overwrite the reader. The reader then has to properly detect that it may have invalid state without relying on the message contents. Second, due to the compiler optimization, there might exist different order in different threads for stores and loads operation. Our model must able to detect every stores and loads are in correct order in multiple thread system.  We will carry out these verification by verifying a TLA+/Pluscal model of the ringbuffer. 
 ## Background 
